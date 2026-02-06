@@ -11,28 +11,38 @@ import javax.swing.ImageIcon;
  *
  * @author ALISSONRAQUELMARTINE
  */
+import java.awt.Image;
+import javax.swing.ImageIcon;
+
 public class PokemonCard extends Card {
+
     private final String resourcePath;
 
     public PokemonCard(String id, String resourcePath) {
         super(id);
         this.resourcePath = resourcePath;
+        this.revealed = false;
     }
 
     @Override
     public ImageIcon getFaceIcon(int size) {
         try {
-             java.net.URL imgURL = getClass().getResource(resourcePath);
+            
+            java.net.URL imgURL = getClass().getResource(resourcePath);
             if (imgURL == null) return null;
 
             
-            ImageIcon raw = new ImageIcon(getClass().getResource(resourcePath));
-            Image scaled = raw.getImage().getScaledInstance(size, size, Image.SCALE_SMOOTH);
-            return new ImageIcon(scaled);
-        } catch (Exception e) {
-            System.err.println("Error cargando imagen: " + e.getMessage());
-            return null;
+            ImageIcon raw = new ImageIcon(imgURL);
+
             
+            Image scaled = raw.getImage()
+                    .getScaledInstance(size, size, Image.SCALE_SMOOTH);
+
+            return new ImageIcon(scaled);
+
+        } catch (Exception e) {
+            System.err.println("Error cargando imagen: " + resourcePath);
+            return null;
         }
     }
 }
