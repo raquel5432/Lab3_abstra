@@ -201,7 +201,7 @@ public class PokemonGUI extends JFrame {
     }
     
     private void verificarFinJuego() {
-        if ((puntosP1 + puntosP2) == 18) { 
+        if ((puntosP1 + puntosP2) == 12) { 
             String mensajeReporte = "--- REPORTE DE BATALLA POKEMON ---\n\n" +
                                     txtP1.getText() + ": " + puntosP1 + " aciertos.\n" +
                                     txtP2.getText() + ": " + puntosP2 + " aciertos.\n\n";
