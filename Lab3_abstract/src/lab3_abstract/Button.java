@@ -4,10 +4,21 @@
  */
 package lab3_abstract;
 
+import javax.swing.JButton;
+
 /**
  *
  * @author ALISSONRAQUELMARTINE
  */
-public class b {
-    
+
+
+public class Button extends JButton {
+    private final int index;
+
+    public Button(int index) {
+        this.index = index;
+        setFocusable(false);
+    }
+
+    public int getIndex() { return index; }
 }
