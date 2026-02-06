@@ -10,13 +10,11 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
-// --- 1. INTERFAZ (Requisito: Interface) ---
 interface AccionesCarta {
     void revelar();
     void ocultar();
 }
 
-// --- 2. CLASE ABSTRACTA (Requisito: Clase Abstracta) ---
 abstract class Carta extends JButton implements AccionesCarta {
     protected String nombrePokemon;
     protected ImageIcon imagenFrontal;
@@ -25,13 +23,12 @@ abstract class Carta extends JButton implements AccionesCarta {
     public Carta(String nombre, ImageIcon imagen) {
         this.nombrePokemon = nombre;
         this.imagenFrontal = imagen;
-        this.ocultar(); // Inicia boca abajo
+        this.ocultar(); 
     }
 
     public String getNombre() { return nombrePokemon; }
 }
 
-// --- 3. CLASE HIJA (Requisito: Polimorfismo) ---
 class CartaPokemon extends Carta {
     public CartaPokemon(String nombre, ImageIcon imagen) {
         super(nombre, imagen);
@@ -40,7 +37,7 @@ class CartaPokemon extends Carta {
     @Override
     public void revelar() {
         this.setIcon(imagenFrontal);
-        this.setEnabled(false); // No se puede clickear si ya está vista
+        this.setEnabled(false); 
     }
 
     @Override
@@ -50,8 +47,6 @@ class CartaPokemon extends Carta {
         this.setEnabled(true);
     }
 }
-
-// --- 4. CLASE PRINCIPAL GUI ---
 public class PokemonGUI extends JFrame {
     private JPanel mainPanel;
     private CardLayout cardLayout = new CardLayout();
