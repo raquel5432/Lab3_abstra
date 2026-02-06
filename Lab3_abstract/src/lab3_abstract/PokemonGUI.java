@@ -73,7 +73,7 @@ public class PokemonGUI extends JFrame {
 
     public PokemonGUI() {
         setTitle("Pokemon Memory Game - Lab II");
-        setSize(900, 800);
+        setSize(600, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
