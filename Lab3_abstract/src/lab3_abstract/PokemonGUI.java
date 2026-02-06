@@ -51,15 +51,12 @@ public class PokemonGUI extends JFrame {
     private JPanel mainPanel;
     private CardLayout cardLayout = new CardLayout();
     
-    // Pantalla Inicio
     private JTextField txtP1, txtP2;
     
-    // Pantalla Juego
     private JLabel lblTurno, lblPuntos1, lblPuntos2;
     private JPanel boardPanel;
     private ArrayList<CartaPokemon> todasLasCartas = new ArrayList<>();
     
-    // Lógica de Juego
     private int puntosP1 = 0, puntosP2 = 0;
     private boolean turnoP1 = true;
     private CartaPokemon primeraSeleccionada, segundaSeleccionada;
@@ -91,7 +88,7 @@ public class PokemonGUI extends JFrame {
         
         txtP1 = new JTextField();
         txtP2 = new JTextField();
-        JButton btn = new JButton("¡INICIAR!");
+        JButton btn = new JButton("INICIAR");
 
         p.add(new JLabel("Jugador 1:")); p.add(txtP1);
         p.add(new JLabel("Jugador 2:")); p.add(txtP2);
@@ -168,18 +165,48 @@ public class PokemonGUI extends JFrame {
     private void verificarPareja() {
         if (primeraSeleccionada.getNombre().equals(segundaSeleccionada.getNombre())) {
             if (turnoP1) puntosP1++; else puntosP2++;
-            primeraSeleccionada = null; segundaSeleccionada = null;
+            
+            primeraSeleccionada = null; 
+            segundaSeleccionada = null;
             actualizarScore();
+            verificarFinJuego(); 
+            
         } else {
             Timer t = new Timer(700, e -> {
                 primeraSeleccionada.ocultar();
                 segundaSeleccionada.ocultar();
-                primeraSeleccionada = null; segundaSeleccionada = null;
+                primeraSeleccionada = null; 
+                segundaSeleccionada = null;
                 turnoP1 = !turnoP1;
                 lblTurno.setText("Turno: " + (turnoP1 ? txtP1.getText() : txtP2.getText()));
             });
             t.setRepeats(false);
             t.start();
+        }
+    }
+    
+    private void verificarFinJuego() {
+        if ((puntosP1 + puntosP2) == 18) {
+            String mensajeReporte = "--- REPORTE DE BATALLA POKEMON ---\n\n" +
+                                    txtP1.getText() + ": " + puntosP1 + " aciertos.\n" +
+                                    txtP2.getText() + ": " + puntosP2 + " aciertos.\n\n";
+            
+            String ganador;
+            if (puntosP1 > puntosP2) {
+                ganador = "EL GANADOR ES " + txtP1.getText().toUpperCase() + "!";
+            } else if (puntosP2 > puntosP1) {
+                ganador = "EL GANADOR ES " + txtP2.getText().toUpperCase() + "!";
+            } else {
+                ganador = "ES UN EMPATE!";
+            }
+            
+            JOptionPane.showMessageDialog(this, mensajeReporte + ganador, "Juego Terminado", JOptionPane.INFORMATION_MESSAGE);
+            
+            cardLayout.show(mainPanel, "INICIO");
+            puntosP1 = 0;
+            puntosP2 = 0;
+            txtP1.setText("");
+            txtP2.setText("");
         }
     }
 }
