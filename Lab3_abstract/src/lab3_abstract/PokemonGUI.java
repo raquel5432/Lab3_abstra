@@ -37,16 +37,20 @@ class CartaPokemon extends Carta {
     @Override
     public void revelar() {
         this.setIcon(imagenFrontal);
-        this.setEnabled(false); 
+        this.setDisabledIcon(imagenFrontal); 
+        this.setEnabled(false);
+        this.setText("");
     }
 
     @Override
     public void ocultar() {
         this.setIcon(null);
+        this.setDisabledIcon(null);
         this.setText("?");
         this.setEnabled(true);
     }
 }
+
 public class PokemonGUI extends JFrame {
     private JPanel mainPanel;
     private CardLayout cardLayout = new CardLayout();
@@ -62,10 +66,9 @@ public class PokemonGUI extends JFrame {
     private CartaPokemon primeraSeleccionada, segundaSeleccionada;
 
     private String[] imagenes = {
-        "Bulbasor.png", "Mew.jfif", "arckbot.png", "charmander.png", "clefair.png", 
-        "dewgong.png", "ditto.png", "gengar.png", "grimer.png", "guldock.jfif", 
-        "hypno.png", "koffing.png", "marowak.png", "ninetale.png", "pikachu.png", 
-        "pinsir.png", "poliwhirl.png", "squirtle.jfif"
+        "Bulbasor.png", "Mew.jfif", "arckbot.png", "charmander.png", 
+        "clefair.png", "dewgong.png", "ditto.png", "gengar.png", 
+        "grimer.png", "guldock.jfif", "hypno.png", "koffing.png"
     };
 
     public PokemonGUI() {
@@ -118,13 +121,16 @@ public class PokemonGUI extends JFrame {
     private void prepararTablero() {
         boardPanel.removeAll();
         todasLasCartas.clear();
+        puntosP1 = 0; puntosP2 = 0; turnoP1 = true;
+        
         lblTurno.setText("Turno: " + txtP1.getText());
         actualizarScore();
 
         for (String img : imagenes) {
             ImageIcon icon = cargarIcono(img);
-            todasLasCartas.add(new CartaPokemon(img, icon));
-            todasLasCartas.add(new CartaPokemon(img, icon));
+            for (int i = 0; i < 3; i++){
+                todasLasCartas.add(new CartaPokemon(img, icon));
+            }
         }
         Collections.shuffle(todasLasCartas);
 
@@ -132,6 +138,9 @@ public class PokemonGUI extends JFrame {
             c.addActionListener(new ClickHandler());
             boardPanel.add(c);
         }
+        
+        boardPanel.revalidate();
+        boardPanel.repaint();
     }
 
     private ImageIcon cargarIcono(String path) {
@@ -151,6 +160,10 @@ public class PokemonGUI extends JFrame {
     private class ClickHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             CartaPokemon seleccionada = (CartaPokemon) e.getSource();
+
+            if (primeraSeleccionada != null && segundaSeleccionada != null) return;
+            if (seleccionada.getIcon() != null || seleccionada == primeraSeleccionada) return;
+
             seleccionada.revelar();
 
             if (primeraSeleccionada == null) {
@@ -169,16 +182,18 @@ public class PokemonGUI extends JFrame {
             primeraSeleccionada = null; 
             segundaSeleccionada = null;
             actualizarScore();
-            verificarFinJuego(); 
-            
+            verificarFinJuego();
         } else {
             Timer t = new Timer(700, e -> {
-                primeraSeleccionada.ocultar();
-                segundaSeleccionada.ocultar();
-                primeraSeleccionada = null; 
-                segundaSeleccionada = null;
-                turnoP1 = !turnoP1;
-                lblTurno.setText("Turno: " + (turnoP1 ? txtP1.getText() : txtP2.getText()));
+                if (primeraSeleccionada != null && segundaSeleccionada != null) {
+                    primeraSeleccionada.ocultar();
+                    segundaSeleccionada.ocultar();
+                    primeraSeleccionada = null; 
+                    segundaSeleccionada = null;
+                    
+                    turnoP1 = !turnoP1;
+                    lblTurno.setText("Turno: " + (turnoP1 ? txtP1.getText() : txtP2.getText()));
+                }
             });
             t.setRepeats(false);
             t.start();
@@ -186,22 +201,22 @@ public class PokemonGUI extends JFrame {
     }
     
     private void verificarFinJuego() {
-        if ((puntosP1 + puntosP2) == 18) {
+        if ((puntosP1 + puntosP2) == 18) { 
             String mensajeReporte = "--- REPORTE DE BATALLA POKEMON ---\n\n" +
                                     txtP1.getText() + ": " + puntosP1 + " aciertos.\n" +
                                     txtP2.getText() + ": " + puntosP2 + " aciertos.\n\n";
-            
+        
             String ganador;
             if (puntosP1 > puntosP2) {
-                ganador = "EL GANADOR ES " + txtP1.getText().toUpperCase() + "!";
+                ganador = "¡EL GANADOR ES " + txtP1.getText().toUpperCase() + "!";
             } else if (puntosP2 > puntosP1) {
-                ganador = "EL GANADOR ES " + txtP2.getText().toUpperCase() + "!";
+                ganador = "¡EL GANADOR ES " + txtP2.getText().toUpperCase() + "!";
             } else {
-                ganador = "ES UN EMPATE!";
+                ganador = "¡ES UN EMPATE!";
             }
-            
+        
             JOptionPane.showMessageDialog(this, mensajeReporte + ganador, "Juego Terminado", JOptionPane.INFORMATION_MESSAGE);
-            
+        
             cardLayout.show(mainPanel, "INICIO");
             puntosP1 = 0;
             puntosP2 = 0;
