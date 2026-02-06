@@ -22,12 +22,17 @@ public class PokemonCard extends Card {
     @Override
     public ImageIcon getFaceIcon(int size) {
         try {
+             java.net.URL imgURL = getClass().getResource(resourcePath);
+            if (imgURL == null) return null;
+
+            
             ImageIcon raw = new ImageIcon(getClass().getResource(resourcePath));
             Image scaled = raw.getImage().getScaledInstance(size, size, Image.SCALE_SMOOTH);
             return new ImageIcon(scaled);
         } catch (Exception e) {
-            // Si el recurso no existe o falla, no revienta el programa
+            System.err.println("Error cargando imagen: " + e.getMessage());
             return null;
+            
         }
     }
 }
