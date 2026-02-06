@@ -124,7 +124,6 @@ public class PokemonGUI extends JFrame {
         lblTurno.setText("Turno: " + txtP1.getText());
         actualizarScore();
 
-        // Crear 18 parejas
         for (String img : imagenes) {
             ImageIcon icon = cargarIcono(img);
             todasLasCartas.add(new CartaPokemon(img, icon));
@@ -140,7 +139,6 @@ public class PokemonGUI extends JFrame {
 
     private ImageIcon cargarIcono(String path) {
         try {
-            // NetBeans carga desde src/Images
             java.net.URL url = getClass().getResource("/Images/" + path);
             ImageIcon icon = new ImageIcon(url);
             Image img = icon.getImage().getScaledInstance(90, 90, Image.SCALE_SMOOTH);
