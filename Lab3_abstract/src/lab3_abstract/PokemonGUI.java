@@ -189,8 +189,4 @@ public class PokemonGUI extends JFrame {
             t.start();
         }
     }
-
-    public static void main(String[] args) {
-        new PokemonGUI();
-    }
 }
