@@ -76,20 +76,25 @@ public class PokemonGUI extends JFrame {
     }
 
     private void initInicio() {
-        JPanel p = new JPanel(new GridLayout(5, 1, 10, 10));
-        p.setBorder(BorderFactory.createEmptyBorder(100, 250, 100, 250));
+        JPanel p = new JPanel(new GridLayout(6, 1, 10, 10));
+        p.setBorder(BorderFactory.createEmptyBorder(80, 200, 80, 200));
         txtP1 = new JTextField();
         txtP2 = new JTextField();
-        JButton btn = new JButton("INICIAR");
+        JButton btnIniciar = new JButton("INICIAR");
+        JButton btnSalirApp = new JButton("SALIR DEL JUEGO");
+
         p.add(new JLabel("Jugador 1:")); p.add(txtP1);
         p.add(new JLabel("Jugador 2:")); p.add(txtP2);
-        p.add(btn);
-        btn.addActionListener(e -> {
+        p.add(btnIniciar);
+        p.add(btnSalirApp);
+
+        btnIniciar.addActionListener(e -> {
             if(!txtP1.getText().isEmpty() && !txtP2.getText().isEmpty()) {
                 prepararTablero();
                 cardLayout.show(mainPanel, "JUEGO");
             }
         });
+        btnSalirApp.addActionListener(e -> System.exit(0));
         mainPanel.add(p, "INICIO");
     }
 
@@ -98,10 +103,37 @@ public class PokemonGUI extends JFrame {
         JPanel info = new JPanel(new GridLayout(1, 3));
         lblPuntos1 = new JLabel(); lblTurno = new JLabel(); lblPuntos2 = new JLabel();
         info.add(lblPuntos1); info.add(lblTurno); info.add(lblPuntos2);
+        
         boardPanel = new JPanel(new GridLayout(6, 6, 5, 5));
+        
+        JPanel panelInferior = new JPanel(new FlowLayout());
+        JButton btnAbandonar = new JButton("ABANDONAR PARTIDA");
+        btnAbandonar.addActionListener(e -> finalizarPorAbandono());
+        panelInferior.add(btnAbandonar);
+
         juego.add(info, BorderLayout.NORTH);
         juego.add(boardPanel, BorderLayout.CENTER);
+        juego.add(panelInferior, BorderLayout.SOUTH);
         mainPanel.add(juego, "JUEGO");
+    }
+
+    private void finalizarPorAbandono() {
+        String abandonador = turnoP1 ? txtP1.getText() : txtP2.getText();
+        String ganador = turnoP1 ? txtP2.getText() : txtP1.getText();
+        
+        String mensaje = abandonador + " ha abandonado la partida.\n" +
+                         "POR LO TANTO, EL GANADOR ES " + ganador.toUpperCase() + "!";
+        
+        JOptionPane.showMessageDialog(this, mensaje, "Fin por Abandono", JOptionPane.WARNING_MESSAGE);
+        
+        cardLayout.show(mainPanel, "INICIO");
+        limpiarDatos();
+    }
+
+    private void limpiarDatos() {
+        puntosP1 = 0; puntosP2 = 0;
+        txtP1.setText(""); txtP2.setText("");
+        primeraSeleccionada = null; segundaSeleccionada = null;
     }
 
     private void prepararTablero() {
@@ -116,7 +148,6 @@ public class PokemonGUI extends JFrame {
             todasLasCartas.add(new CartaPokemon(img, icon));
             todasLasCartas.add(new CartaPokemon(img, icon));
         }
-
         for (int i = 0; i < 6; i++) {
             String imgRepetida = imagenes[i];
             ImageIcon iconRepetido = cargarIcono(imgRepetida);
@@ -165,8 +196,7 @@ public class PokemonGUI extends JFrame {
     private void verificarPareja() {
         if (primeraSeleccionada.getNombre().equals(segundaSeleccionada.getNombre())) {
             if (turnoP1) puntosP1++; else puntosP2++;
-            primeraSeleccionada = null; 
-            segundaSeleccionada = null;
+            primeraSeleccionada = null; segundaSeleccionada = null;
             actualizarScore();
             verificarFinJuego();
         } else {
@@ -174,8 +204,7 @@ public class PokemonGUI extends JFrame {
                 if (primeraSeleccionada != null && segundaSeleccionada != null) {
                     primeraSeleccionada.ocultar();
                     segundaSeleccionada.ocultar();
-                    primeraSeleccionada = null; 
-                    segundaSeleccionada = null;
+                    primeraSeleccionada = null; segundaSeleccionada = null;
                     turnoP1 = !turnoP1;
                     lblTurno.setText("Turno: " + (turnoP1 ? txtP1.getText() : txtP2.getText()));
                 }
@@ -190,12 +219,15 @@ public class PokemonGUI extends JFrame {
             String mensajeReporte = "--- REPORTE DE BATALLA POKEMON ---\n\n" +
                                     txtP1.getText() + ": " + puntosP1 + " aciertos.\n" +
                                     txtP2.getText() + ": " + puntosP2 + " aciertos.\n\n";
-            String ganador = (puntosP1 > puntosP2) ? "¡EL GANADOR ES " + txtP1.getText().toUpperCase() + "!" :
-                             (puntosP2 > puntosP1) ? "¡EL GANADOR ES " + txtP2.getText().toUpperCase() + "!" : "¡ES UN EMPATE!";
-            JOptionPane.showMessageDialog(this, mensajeReporte + ganador, "Juego Terminado", JOptionPane.INFORMATION_MESSAGE);
-            cardLayout.show(mainPanel, "INICIO");
-            puntosP1 = 0; puntosP2 = 0;
-            txtP1.setText(""); txtP2.setText("");
+            String ganador = (puntosP1 > puntosP2) ? "EL GANADOR ES " + txtP1.getText().toUpperCase() + "!" :
+                             (puntosP2 > puntosP1) ? "EL GANADOR ES " + txtP2.getText().toUpperCase() + "!" : "ES UN EMPATE!";
+            
+            Object[] opciones = {"Reintentar", "Cerrar Juego"};
+            int eleccion = JOptionPane.showOptionDialog(this, mensajeReporte + ganador, "Juego Terminado",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, opciones, opciones[0]);
+
+            if (eleccion == 1) System.exit(0);
+            else { cardLayout.show(mainPanel, "INICIO"); limpiarDatos(); }
         }
     }
 }
